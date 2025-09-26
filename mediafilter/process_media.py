@@ -1,6 +1,6 @@
 import os
 import cv2 as cv
-import filters as flt
+import mediafilter.filters as flt
 import ffmpeg
 
 def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
@@ -32,9 +32,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         s=f'{w}x{h}',
         r=fps
     )
-
-    #audio_in = ffmpeg.input(vid_input_path).audio
-
+    
     output = ffmpeg.output(
         video_in,
         vid_output_path,

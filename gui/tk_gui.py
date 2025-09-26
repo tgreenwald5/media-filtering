@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
-import process_media as pm
+from mediafilter import process_media as pm
 
 class Gui:
     def __init__(self, root):
