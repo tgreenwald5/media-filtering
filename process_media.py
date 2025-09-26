@@ -1,6 +1,7 @@
 import os
 import cv2 as cv
 import filters as flt
+import ffmpeg
 
 def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     img_input = cv.imread(img_input_path)
@@ -21,11 +22,31 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
     fps = vid_input.get(cv.CAP_PROP_FPS) or 30.0
 
     vid_output_path = get_output_path(vid_input_path, vid_output_dir, filter_type, bg_color)
-    
-    fourcc = cv.VideoWriter_fourcc(*'mp4v')
-    vid_output = cv.VideoWriter(vid_output_path, fourcc, fps, (w, h))
 
     print("Processing...")
+
+    video_in = ffmpeg.input(
+        'pipe:',
+        format='rawvideo',
+        pix_fmt='bgr24',
+        s=f'{w}x{h}',
+        r=fps
+    )
+
+    #audio_in = ffmpeg.input(vid_input_path).audio
+
+    output = ffmpeg.output(
+        video_in,
+        vid_output_path,
+        vcodec='libx264',
+        crf=18, # lower val -> higher quality -> uses more memory
+        preset='slow', # slower -> more efficient -> uses less memory (longer process time)
+        pix_fmt='yuv420p',
+        maxrate='12M', # higher val -> more detail -> uses more memory
+        bufsize='24M' # higher val -> higher quality -> possibly uses more memory
+    )
+
+    process = output.overwrite_output().run_async(pipe_stdin=True)
 
     while vid_input.isOpened():
         ret, frame = vid_input.read()
@@ -35,11 +56,14 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
             filter_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
         else:
             filter_frame = flt.get_cartoon_frame(frame, for_video=True)
-        vid_output.write(filter_frame)
+
+        process.stdin.write(filter_frame.astype('uint8').tobytes())
     
-    print("Video saved to ", vid_output_path)
     vid_input.release()
-    vid_output.release()
+    process.stdin.close()
+    process.wait()
+
+    print("Video saved to ", vid_output_path)
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
     filename = os.path.basename(input_path)
