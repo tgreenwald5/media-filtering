@@ -19,14 +19,13 @@ def update_bg_options(filter_choice):
             return gr.update(choices=[], value=None, interactive=False, visible=False)
 
 # ui
-with gr.Blocks() as demo:
+with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
     gr.Markdown("Media Filtering")
-    
     with gr.Tabs():
         # img tab
         with gr.Tab("Image Filtering"):
             with gr.Row():
-                img_input = gr.Image(type="filepath", label="Upload Image", webcam_options=None)
+                img_input = gr.Image(type="filepath", label="Upload Image")
                 img_output = gr.Image(label="Processed Image")
             img_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter")
             img_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
