@@ -13,6 +13,7 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     img_output_path = get_output_path(img_input_path, img_output_dir, filter_type, bg_color)
     cv.imwrite(img_output_path, img_output)
     print("Image saved to ", img_output_path)
+    return img_output_path
 
 
 def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
@@ -62,6 +63,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
     process.wait()
 
     print("Video saved to ", vid_output_path)
+    return vid_output_path
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
     filename = os.path.basename(input_path)
