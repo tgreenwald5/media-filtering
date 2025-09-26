@@ -39,7 +39,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         vid_output_path,
         vcodec='libx264',
         crf=18, # lower val -> higher quality -> uses more memory
-        preset='slow', # slower -> more efficient -> uses less memory (longer process time)
+        preset='fast', # slower -> more efficient -> uses less memory (longer process time)
         pix_fmt='yuv420p',
         maxrate='12M', # higher val -> more detail -> uses more memory
         bufsize='24M' # higher val -> higher quality -> possibly uses more memory
