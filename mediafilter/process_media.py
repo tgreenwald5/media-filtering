@@ -76,10 +76,17 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
     filename = os.path.basename(input_path)
-    output_base, _ = os.path.splitext(filename)
-    output_ext = ".mp4"
-    if bg_color != "":
+    output_base, input_ext = os.path.splitext(filename)
+
+    img_exts = [".jpg", ".jpeg", ".png", ".bmp", ".tiff"]
+    if input_ext.lower() in img_exts:
+        output_ext = ".png"
+    else:
+        output_ext = ".mp4"
+
+    if bg_color:
         output_path = output_dir + "/" + output_base + f"_{filter_type.lower()}" + f"_{bg_color}" + output_ext
     else:
         output_path = output_dir + "/" + output_base + f"_{filter_type.lower()}" + output_ext
+        
     return output_path
