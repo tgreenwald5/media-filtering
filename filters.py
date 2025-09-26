@@ -60,7 +60,7 @@ def get_cartoon_frame(frame, for_video=False):
     if for_video == False:
         frame = normalize_size(frame, max_side=1024)
 
-    smooth = cv.bilateralFilter(frame, d=9, sigmaColor=75, sigmaSpace=75)
+    smooth = cv.bilateralFilter(frame, d=9, sigmaColor=150, sigmaSpace=75) 
 
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
