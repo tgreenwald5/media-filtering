@@ -17,16 +17,19 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
 
 
 def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
-    vid_input = cv.VideoCapture(vid_input_path)
-    w = int(vid_input.get(cv.CAP_PROP_FRAME_WIDTH))
-    h = int(vid_input.get(cv.CAP_PROP_FRAME_HEIGHT))
-    fps = vid_input.get(cv.CAP_PROP_FPS) or 30.0
+    # open input video file
+    cv_cap = cv.VideoCapture(vid_input_path)
+    w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
+    h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+    fps = cv_cap.get(cv.CAP_PROP_FPS) or 30.0
 
+    # build output file (force output ext to .mp4)
     vid_output_path = get_output_path(vid_input_path, vid_output_dir, filter_type, bg_color)
 
     print("Processing...")
 
-    video_in = ffmpeg.input(
+    # ffmpeg input stream from raw frames
+    ffmpeg_input = ffmpeg.input(
         'pipe:',
         format='rawvideo',
         pix_fmt='bgr24',
@@ -34,8 +37,9 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         r=fps
     )
     
-    output = ffmpeg.output(
-        video_in,
+    # ffmpeg output stream - compressed into h.264 and put into .mp4
+    ffmpeg_output = ffmpeg.output(
+        ffmpeg_input,
         vid_output_path,
         vcodec='libx264',
         crf=18, # lower val -> higher quality -> uses more memory
@@ -45,29 +49,35 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         bufsize='24M' # higher val -> higher quality -> possibly uses more memory
     )
 
-    process = output.overwrite_output().run_async(pipe_stdin=True)
+    # start ffmpeg process async to receive raw frames
+    ffmpeg_process = ffmpeg_output.overwrite_output().run_async(pipe_stdin=True)
 
-    while vid_input.isOpened():
-        ret, frame = vid_input.read()
+    # read frames from input vivd with opencv
+    while cv_cap.isOpened():
+        ret, frame = cv_cap.read()
         if not ret: 
             break
-        if filter_type == "Sketch":
-            filter_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
-        else:
-            filter_frame = flt.get_cartoon_frame(frame, for_video=True)
 
-        process.stdin.write(filter_frame.astype('uint8').tobytes())
+        # apply filter to frame
+        if filter_type == "Sketch":
+            processed_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
+        else:
+            processed_frame = flt.get_cartoon_frame(frame, for_video=True)
+
+        # send processed frame to ffmpeg compression
+        ffmpeg_process.stdin.write(processed_frame.astype('uint8').tobytes())
     
-    vid_input.release()
-    process.stdin.close()
-    process.wait()
+    cv_cap.release()
+    ffmpeg_process.stdin.close()
+    ffmpeg_process.wait()
 
     print("Video saved to ", vid_output_path)
     return vid_output_path
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
     filename = os.path.basename(input_path)
-    output_base, output_ext = os.path.splitext(filename)
+    output_base, _ = os.path.splitext(filename)
+    output_ext = ".mp4"
     if bg_color != "":
         output_path = output_dir + "/" + output_base + f"_{filter_type.lower()}" + f"_{bg_color}" + output_ext
     else:
