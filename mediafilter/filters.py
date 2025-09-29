@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+from sklearn.cluster import MiniBatchKMeans
 
 def normalize_size(img, max_side=1024):
     h, w = img.shape[:2]
@@ -12,8 +13,8 @@ def normalize_size(img, max_side=1024):
     return norm_img
 
 def get_canny_threshs(img):
-    grad_x = cv.Sobel(img, cv.CV_64F, 1, 0, ksize=1)
-    grad_y = cv.Sobel(img, cv.CV_64F, 0, 1, ksize=1)
+    grad_x = cv.Sobel(img, cv.CV_64F, 1, 0, ksize=3)
+    grad_y = cv.Sobel(img, cv.CV_64F, 0, 1, ksize=3)
     grad_mag = cv.magnitude(grad_x, grad_y)
     med = float(np.median(grad_mag))
     lower = int(max(0, min(0.66 * med, 255)))
@@ -56,20 +57,37 @@ def get_sketch_frame(frame, bg_color, for_video=False):
 
     return sketch_frame
 
-def get_cartoon_frame(frame, for_video=False):
+# fit new kmeans with new color centroids
+def get_kmeans(pix_colors):
+    new_kmeans = MiniBatchKMeans(n_clusters=16, random_state=0, batch_size=1000)
+    new_kmeans.fit(pix_colors)
+    return new_kmeans
+
+kmeans = None
+def get_cartoon_frame(frame, frame_idx, for_video=False):
+    global kmeans
     if for_video == False:
         frame = normalize_size(frame, max_side=1024)
 
-    smooth = cv.bilateralFilter(frame, d=9, sigmaColor=150, sigmaSpace=75) 
+    smooth = cv.bilateralFilter(frame, d=9, sigmaColor=150, sigmaSpace=75)
+    pixel_colors = smooth.reshape((-1, 3)) 
+
+    rt_every_frame = 30 # retrain and update color centroids every n frames
+    if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
+        kmeans = get_kmeans(pixel_colors) # get new centroids
+
+    labels = kmeans.predict(pixel_colors) # pixels to color clusters
+    quantized = kmeans.cluster_centers_[labels].astype('uint8')
+    quantized = quantized.reshape(smooth.shape)
 
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
-    edges = get_edges(gray, 3, lower_th, upper_th, sigma)
+    edges = get_edges(gray, 5, lower_th * 1.5, upper_th * 1.5, sigma)
 
     edges = cv.dilate(edges, np.ones((2,2), np.uint8), iterations=1)
     edges_inv = cv.bitwise_not(edges)
 
-    cartoon_frame = cv.bitwise_and(smooth, smooth, mask=edges_inv)
+    cartoon_frame = cv.bitwise_and(quantized, quantized, mask=edges_inv)
 
     return cartoon_frame

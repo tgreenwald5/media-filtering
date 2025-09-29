@@ -8,7 +8,7 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     if filter_type == "Sketch":
         img_output = flt.get_sketch_frame(img_input, bg_color, for_video=False)
     else:
-        img_output = flt.get_cartoon_frame(img_input, for_video=False)
+        img_output = flt.get_cartoon_frame(img_input, frame_idx=0, for_video=False)
     
     img_output_path = get_output_path(img_input_path, img_output_dir, filter_type, bg_color)
     cv.imwrite(img_output_path, img_output)
@@ -52,7 +52,9 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
     # start ffmpeg process async to receive raw frames
     ffmpeg_process = ffmpeg_output.overwrite_output().run_async(pipe_stdin=True)
 
+
     # read frames from input vivd with opencv
+    frame_idx = 0
     while cv_cap.isOpened():
         ret, frame = cv_cap.read()
         if not ret: 
@@ -62,16 +64,18 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         if filter_type == "Sketch":
             processed_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
         else:
-            processed_frame = flt.get_cartoon_frame(frame, for_video=True)
+            processed_frame = flt.get_cartoon_frame(frame, frame_idx, for_video=True)
 
         # send processed frame to ffmpeg compression
         ffmpeg_process.stdin.write(processed_frame.astype('uint8').tobytes())
+        frame_idx += 1
     
     cv_cap.release()
     ffmpeg_process.stdin.close()
     ffmpeg_process.wait()
 
     print("Video saved to ", vid_output_path)
+    flt.kmeans = None
     return vid_output_path
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
