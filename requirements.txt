@@ -2,3 +2,4 @@ gradio
 opencv-python
 numpy>2
 ffmpeg-python
+scikit-learn
