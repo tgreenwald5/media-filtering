@@ -41,9 +41,6 @@ def get_edges(img, k_size, lower_th, upper_th, sigma):
     return edges
 
 def get_sketch_frame(frame, bg_color, for_video=False):
-    if for_video == False:
-        frame = normalize_size(frame, max_side=1024)
-
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
