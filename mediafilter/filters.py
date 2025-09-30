@@ -94,7 +94,7 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
             elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
-            sample = pixel_colors[np.random.choice(len(pixel_colors), size=50000, replace=False)]
+            sample = pixel_colors[np.random.choice(len(pixel_colors), size=200000, replace=False)]
             elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
