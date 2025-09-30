@@ -90,11 +90,11 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
         if for_video == True:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=8, k_max=64, step=4)
+            elbow_k = get_k_elbow(sample, k_min=16, k_max=32, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=16, k_max=32, step=4)
+            elbow_k = get_k_elbow(sample, k_min=8, k_max=72, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
