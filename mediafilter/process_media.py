@@ -72,7 +72,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
         if not ret: 
             break
 
-        if (w != orig_h or h != orig_h):
+        if (w != orig_w or h != orig_h):
             frame = cv.resize(frame, (w, h), interpolation=cv.INTER_AREA)
 
         # apply filter to frame
