@@ -15,7 +15,7 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     print("Image saved to ", img_output_path)
     return img_output_path
 
-def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=1080):
+def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=960):
     # open input video file
     cv_cap = cv.VideoCapture(vid_input_path)
     orig_w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -91,6 +91,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
 
     print("Video saved to ", vid_output_path)
     flt.kmeans = None
+    flt.edge_buffer.clear()
     return vid_output_path
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
