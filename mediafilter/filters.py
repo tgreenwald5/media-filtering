@@ -41,6 +41,8 @@ def get_edges(img, k_size, lower_th, upper_th, sigma):
     return edges
 
 def get_sketch_frame(frame, bg_color, for_video=False):
+    if for_video == False:
+        frame = normalize_size(frame, max_side=1280)
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
@@ -79,7 +81,7 @@ kmeans = None
 def get_cartoon_frame(frame, frame_idx, for_video=False):
     global kmeans
     if for_video == False:
-        frame = normalize_size(frame, max_side=1024)
+        frame = normalize_size(frame, max_side=1280)
 
     smooth = cv.bilateralFilter(frame, d=9, sigmaColor=150, sigmaSpace=75)
     pixel_colors = smooth.reshape((-1, 3)) 
@@ -88,11 +90,11 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
         if for_video == True:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=32, k_max=128, step=4)
+            elbow_k = get_k_elbow(sample, k_min=8, k_max=64, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=16, k_max=96, step=4)
+            elbow_k = get_k_elbow(sample, k_min=16, k_max=32, step=4)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
