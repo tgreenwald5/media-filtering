@@ -122,7 +122,7 @@ def get_k_elbow(pix_colors, k_min, k_max, step):
     inertias = []
     ks = range(k_min, k_max + 1, step)
     for k in ks:
-        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=5000)
+        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=10000)
         kmeans.fit(pix_colors)
         inertias.append(kmeans.inertia_)
     diffs = np.diff(inertias)
