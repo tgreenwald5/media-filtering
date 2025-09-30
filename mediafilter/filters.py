@@ -58,8 +58,8 @@ def get_sketch_frame(frame, bg_color, for_video=False):
     return sketch_frame
 
 # fit new kmeans with new color centroids
-def get_kmeans(pix_colors):
-    new_kmeans = MiniBatchKMeans(n_clusters=16, random_state=0, batch_size=1000)
+def get_kmeans(pix_colors, num_clusts):
+    new_kmeans = MiniBatchKMeans(n_clusters=num_clusts, random_state=0, batch_size=3000)
     new_kmeans.fit(pix_colors)
     return new_kmeans
 
@@ -74,7 +74,10 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
 
     rt_every_frame = 30 # retrain and update color centroids every n frames
     if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
-        kmeans = get_kmeans(pixel_colors) # get new centroids
+        if for_video == True:
+            kmeans = get_kmeans(pixel_colors, num_clusts=36) # get new centroids (video)
+        else:
+            kmeans = get_kmeans(pixel_colors, num_clusts=24) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
     quantized = kmeans.cluster_centers_[labels].astype('uint8')
@@ -86,8 +89,9 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     edges = get_edges(gray, 5, lower_th * 1.5, upper_th * 1.5, sigma)
 
     edges = cv.dilate(edges, np.ones((2,2), np.uint8), iterations=1)
-    edges_inv = cv.bitwise_not(edges)
 
-    cartoon_frame = cv.bitwise_and(quantized, quantized, mask=edges_inv)
+    cartoon_frame = quantized.copy()
+    df = 0.5  # larger value -> lighter edges 
+    cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
 
     return cartoon_frame

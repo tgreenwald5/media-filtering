@@ -15,13 +15,25 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     print("Image saved to ", img_output_path)
     return img_output_path
 
-
-def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
+def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=1080):
     # open input video file
     cv_cap = cv.VideoCapture(vid_input_path)
-    w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
-    h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+    orig_w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
+    orig_h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
     fps = cv_cap.get(cv.CAP_PROP_FPS) or 30.0
+
+    # reduce video dimensions if needed 
+    if max(orig_h, orig_w) > max_side:
+        scale = max_side / max(orig_h, orig_w)
+        w = max(1, int(orig_w * scale))
+        h = max(1, int(orig_h * scale))
+        if w % 2 != 0:
+            w = w -1
+        if h % 2 != 0:
+            h = h - 1
+    else:
+        w = orig_w
+        h = orig_h
 
     # build output file (force output ext to .mp4)
     vid_output_path = get_output_path(vid_input_path, vid_output_dir, filter_type, bg_color)
@@ -59,6 +71,9 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         ret, frame = cv_cap.read()
         if not ret: 
             break
+
+        if (w != orig_h or h != orig_h):
+            frame = cv.resize(frame, (w, h), interpolation=cv.INTER_AREA)
 
         # apply filter to frame
         if filter_type == "Sketch":
