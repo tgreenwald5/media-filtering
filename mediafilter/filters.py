@@ -47,7 +47,7 @@ def get_sketch_frame(frame, bg_color, for_video=False):
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
     blur = 3
-    edges = get_edges(gray, blur, lower_th, upper_th, sigma)
+    edges = get_edges(gray, blur, lower_th * 1.8, upper_th * 1.8, sigma)
 
     if bg_color == "White":
         sketch_frame = np.full_like(frame, 255)
