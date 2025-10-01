@@ -46,7 +46,7 @@ def get_sketch_frame(frame, bg_color, for_video=False):
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
-    blur = 5
+    blur = 3
     edges = get_edges(gray, blur, lower_th, upper_th, sigma)
 
     if bg_color == "White":
@@ -84,18 +84,18 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     if for_video == False:
         frame = normalize_size(frame, max_side=1280)
 
-    smooth = cv.bilateralFilter(frame, d=6, sigmaColor=150, sigmaSpace=75)
+    smooth = cv.bilateralFilter(frame, d=6, sigmaColor=100, sigmaSpace=50)
     pixel_colors = smooth.reshape((-1, 3)) 
 
     rt_every_frame = 30 # retrain and update color centroids every n frames
     if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
         if for_video == True:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4)
+            elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4, for_vid=True)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
-            sample = pixel_colors[np.random.choice(len(pixel_colors), size=200000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4)
+            sample = pixel_colors[np.random.choice(len(pixel_colors), size=50000, replace=False)]
+            elbow_k = get_k_elbow(sample, k_min=24, k_max=64, step=4, for_vid=False)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
@@ -112,17 +112,21 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         edges = smooth_edges(edges)
 
     cartoon_frame = quantized.copy()
-    df = 0.5  # larger value -> lighter edges 
+    df = 0.4  # larger value -> lighter edges 
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
 
     return cartoon_frame
 
 # calc number of clusters to use for kmeans
-def get_k_elbow(pix_colors, k_min, k_max, step):
+def get_k_elbow(pix_colors, k_min, k_max, step, for_vid):
     inertias = []
     ks = range(k_min, k_max + 1, step)
+    if for_vid == True:
+        bs = 2000
+    else:
+        bs = 10000
     for k in ks:
-        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=10000)
+        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=bs)
         kmeans.fit(pix_colors)
         inertias.append(kmeans.inertia_)
     diffs = np.diff(inertias)
