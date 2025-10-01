@@ -3,7 +3,7 @@ import cv2 as cv
 from sklearn.cluster import MiniBatchKMeans
 from collections import deque
 
-def normalize_size(img, max_side=1024):
+def normalize_size(img, max_side=1280):
     h, w = img.shape[:2]
     if max(h, w) <= max_side:
         return img
@@ -42,7 +42,7 @@ def get_edges(img, k_size, lower_th, upper_th, sigma):
 
 def get_sketch_frame(frame, bg_color, for_video=False):
     if for_video == False:
-        frame = normalize_size(frame, max_side=1024)
+        frame = normalize_size(frame, max_side=1280)
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
