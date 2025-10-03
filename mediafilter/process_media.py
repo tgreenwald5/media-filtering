@@ -15,12 +15,17 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     print("Image saved to ", img_output_path)
     return img_output_path
 
-def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=1120):
+def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=1050):
     # open input video file
     cv_cap = cv.VideoCapture(vid_input_path)
     orig_w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
     orig_h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-    fps = cv_cap.get(cv.CAP_PROP_FPS) or 30.0
+    input_fps = cv_cap.get(cv.CAP_PROP_FPS) or 22.0
+    if filter_type == "Sketch":
+        max_fps = 30.0
+    else:
+        max_fps = 22.0
+    output_fps = min(input_fps, max_fps)
 
     # reduce video dimensions if needed 
     if max(orig_h, orig_w) > max_side:
@@ -46,7 +51,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
         format='rawvideo',
         pix_fmt='bgr24',
         s=f'{w}x{h}',
-        r=fps
+        r=output_fps
     )
     
     # ffmpeg output stream - compressed into h.264 and put into .mp4
@@ -67,22 +72,32 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
 
     # read frames from input vivd with opencv
     frame_idx = 0
+    processed_frame_idx = 0
+
+    frame_interval = input_fps / output_fps
+    next_frame_to_process = 0.0
+
     while cv_cap.isOpened():
         ret, frame = cv_cap.read()
         if not ret: 
             break
+        
+        if frame_idx >= next_frame_to_process:
+            if (w != orig_w or h != orig_h):
+                frame = cv.resize(frame, (w, h), interpolation=cv.INTER_AREA)
 
-        if (w != orig_w or h != orig_h):
-            frame = cv.resize(frame, (w, h), interpolation=cv.INTER_AREA)
+            # apply filter to frame
+            if filter_type == "Sketch":
+                processed_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
+            else:
+                processed_frame = flt.get_cartoon_frame(frame, frame_idx, for_video=True)
 
-        # apply filter to frame
-        if filter_type == "Sketch":
-            processed_frame = flt.get_sketch_frame(frame, bg_color, for_video=True)
-        else:
-            processed_frame = flt.get_cartoon_frame(frame, frame_idx, for_video=True)
+            # send processed frame to ffmpeg compression
+            ffmpeg_process.stdin.write(processed_frame.astype('uint8').tobytes())
 
-        # send processed frame to ffmpeg compression
-        ffmpeg_process.stdin.write(processed_frame.astype('uint8').tobytes())
+            processed_frame_idx += 1
+            next_frame_to_process += frame_interval
+
         frame_idx += 1
     
     cv_cap.release()

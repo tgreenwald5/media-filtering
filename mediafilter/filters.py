@@ -65,7 +65,7 @@ def get_kmeans(pix_colors, num_clusts):
     return new_kmeans
 
 # reduce edge flickering in video
-edge_buffer = deque(maxlen=3)
+edge_buffer = deque(maxlen=2)
 def smooth_edges(curr_edges, min_weight=0.4, max_weight=0.8): # small weight -> more past frame influence
     global edge_buffer
     curr_edges = curr_edges.astype(np.float32)
@@ -95,19 +95,22 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     global kmeans
     if for_video == False:
         frame = normalize_size(frame, max_side=1280)
+        bilat_d = 7
+    else:
+        bilat_d = 5
 
-    smooth = cv.bilateralFilter(frame, d=7, sigmaColor=100, sigmaSpace=75)
+    smooth = cv.bilateralFilter(frame, d=bilat_d, sigmaColor=150, sigmaSpace=250)
     pixel_colors = smooth.reshape((-1, 3)) 
 
-    rt_every_frame = 30 # retrain and update color centroids every n frames
+    rt_every_frame = 60 # retrain and update color centroids every n frames
     if kmeans == None or frame_idx % rt_every_frame == 0: # if kmeans not created or time for new fitting
         if for_video == True:
-            sample = pixel_colors[np.random.choice(len(pixel_colors), size=5000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=12, k_max=32, step=4, for_vid=True)
+            sample = pixel_colors[np.random.choice(len(pixel_colors), size=50000, replace=False)]
+            elbow_k = get_k_elbow(sample, k_min=20, k_max=40, step=4, for_vid=True)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=50000, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=12, k_max=32, step=4, for_vid=False)
+            elbow_k = get_k_elbow(sample, k_min=20, k_max=40, step=4, for_vid=False)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
@@ -124,7 +127,10 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         edges = smooth_edges(edges)
 
     cartoon_frame = quantized.copy()
-    df = 0.4  # dark factor (lower value -> darker edges)
+    if for_video == True:
+        df = 0.6  # dark factor (lower value -> darker edges)
+    else:
+        df = 0.4
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
 
     return cartoon_frame
