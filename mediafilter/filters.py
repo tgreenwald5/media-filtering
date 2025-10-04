@@ -129,10 +129,8 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         edges = smooth_edges(edges)
 
     cartoon_frame = quantized.copy()
-    if for_video == True:
-        df = 0.4  # dark factor (lower value -> darker edges)
-    else:
-        df = 0.4
+    
+    df = 0.4 # dark factor (lower value -> darker edges)
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
 
     return cartoon_frame
