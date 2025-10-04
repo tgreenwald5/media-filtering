@@ -97,11 +97,8 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     global kmeans
     if for_video == False:
         frame = normalize_size(frame, max_side=1280)
-        bilat_d = 7
-    else:
-        bilat_d = 6
 
-    smooth = cv.bilateralFilter(frame, d=bilat_d, sigmaColor=150, sigmaSpace=250)
+    smooth = cv.bilateralFilter(frame, d=7, sigmaColor=150, sigmaSpace=75)
     pixel_colors = smooth.reshape((-1, 3)) 
 
     rt_every_frame = 60 # retrain and update color centroids every n frames
@@ -129,7 +126,7 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         edges = smooth_edges(edges)
 
     cartoon_frame = quantized.copy()
-    
+
     df = 0.4 # dark factor (lower value -> darker edges)
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
 
