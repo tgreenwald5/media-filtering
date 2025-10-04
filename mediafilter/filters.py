@@ -49,6 +49,8 @@ def get_sketch_frame(frame, bg_color, for_video=False):
     sigma = get_sigma(gray)
     blur = 3
     edges = get_edges(gray, blur, lower_th * 1.8, upper_th * 1.8, sigma)
+    if for_video == True:
+        edges = smooth_edges(edges)
 
     if bg_color == "White":
         sketch_frame = np.full_like(frame, 255)
@@ -66,7 +68,7 @@ def get_kmeans(pix_colors, num_clusts):
 
 # reduce edge flickering in video
 edge_buffer = deque(maxlen=2)
-def smooth_edges(curr_edges, min_weight=0.4, max_weight=0.8): # small weight -> more past frame influence
+def smooth_edges(curr_edges, min_weight=0.3, max_weight=0.8): # small weight -> more past frame influence
     global edge_buffer
     curr_edges = curr_edges.astype(np.float32)
 
@@ -97,7 +99,7 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         frame = normalize_size(frame, max_side=1280)
         bilat_d = 7
     else:
-        bilat_d = 5
+        bilat_d = 6
 
     smooth = cv.bilateralFilter(frame, d=bilat_d, sigmaColor=150, sigmaSpace=250)
     pixel_colors = smooth.reshape((-1, 3)) 
@@ -128,7 +130,7 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
 
     cartoon_frame = quantized.copy()
     if for_video == True:
-        df = 0.6  # dark factor (lower value -> darker edges)
+        df = 0.4  # dark factor (lower value -> darker edges)
     else:
         df = 0.4
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * df).astype(np.uint8)
