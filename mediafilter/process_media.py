@@ -20,8 +20,8 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
     cv_cap = cv.VideoCapture(vid_input_path)
     orig_w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
     orig_h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-    input_fps = cv_cap.get(cv.CAP_PROP_FPS) or 22.0
-    max_fps = 22.0
+    input_fps = cv_cap.get(cv.CAP_PROP_FPS) or 24.0
+    max_fps = 24.0
     output_fps = min(input_fps, max_fps)
 
     # reduce video dimensions if needed 
