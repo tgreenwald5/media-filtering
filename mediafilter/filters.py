@@ -120,7 +120,10 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     
     lower_th, upper_th = get_canny_threshs(gray)
     sigma = get_sigma(gray)
-    edges = get_edges(gray, 5, lower_th * 1.5, upper_th * 1.5, sigma)
+    if  for_video == True:
+        edges = get_edges(gray, 5, lower_th * 1.5, upper_th * 1.5, sigma)
+    else:
+        edges = get_edges(gray, 3, lower_th, upper_th, sigma)
 
     if for_video == True:
         edges = smooth_edges(edges)
