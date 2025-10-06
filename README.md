@@ -28,8 +28,54 @@ Transforms images and videos into sketch or cartoon styles using adaptive comput
     - Web interface using Gradio
     - Desktop GUI using Tkinter
 
-## Examples
+## Demos
+**Images**
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/3d165ece-29ba-49be-8869-f8c8eee1988c" width="500"><br>
+      <sub>Original</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/462131c3-67a4-4606-9d35-996b66b32992" width="500"><br>
+      <sub>Cartoon</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/a68dcc49-59aa-4449-9fd5-df4dffca1edb" width="500"><br>
+      <sub>Sketch (Black Background)</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/d3641cd3-dc42-44c3-b572-570924e630d5" width="500"><br>
+      <sub>Sketch (White Background)</sub>
+    </td>
+  </tr>
+</table>
 
+**Videos**
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/e2ddac22-7028-4343-b4e6-8e560536e567" width="500"><br>
+      <sub>Original — <a href="https://assets.taylorgreenwald.com/mf_assets/gifs/tractor.gif">[Full Resolution]</a> </sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/9b4b2874-ed71-43e1-8191-a61abdf731ba" width="500"><br>
+      <sub>Cartoon — <a href="https://assets.taylorgreenwald.com/mf_assets/gifs/tractor_cartoon.gif">[Full Resolution]</a> </sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/adb7ea74-47e2-4973-bd4e-91f054a56562" width="500"><br>
+      <sub>Sketch (Black Background) - <a href="https://assets.taylorgreenwald.com/mf_assets/gifs/tractor_sketch_Black.gif">[Full Resolution]</a> </sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/f66dda28-949d-40d8-9d21-3610df3c40d6" width="500"><br>
+      <sub>Sketch (White Background) - <a href="https://assets.taylorgreenwald.com/mf_assets/gifs/tractor_sketch_White.gif">[Full Resolution]</a> </sub>
+    </td>
+  </tr>
+</table>
 
 ## Installation
 1. **Clone the Repository**
