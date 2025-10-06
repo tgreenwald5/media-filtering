@@ -147,6 +147,9 @@ python -m gui.tk_gui
     - K-means color quantization (20-40 color clusters, exact number is dynamically found using the elbow method)
     - Edges are detected and darkened
     - K-means is retrained every 60 frames for videos
+<img width="500" height="600" alt="mf_flowchart" src="https://github.com/user-attachments/assets/f7e03516-0af1-4bef-bd96-5dec9750a286" />
+
+
 
 **Performance Optimizations**
 - Chose to use MiniBatchKMeans instead of traditional KMeans for more efficient clustering
