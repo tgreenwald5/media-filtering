@@ -2,6 +2,7 @@ import os
 import cv2 as cv
 import mediafilter.filters as flt
 import ffmpeg
+from mediafilter.constants import *
 
 def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     img_input = cv.imread(img_input_path)
@@ -15,18 +16,17 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     print("Image saved to ", img_output_path)
     return img_output_path
 
-def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_side=1050):
+def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
     # open input video file
     cv_cap = cv.VideoCapture(vid_input_path)
     orig_w = int(cv_cap.get(cv.CAP_PROP_FRAME_WIDTH))
     orig_h = int(cv_cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-    input_fps = cv_cap.get(cv.CAP_PROP_FPS) or 24.0
-    max_fps = 24.0
-    output_fps = min(input_fps, max_fps)
+    input_fps = cv_cap.get(cv.CAP_PROP_FPS) or MAX_FPS
+    output_fps = min(input_fps, MAX_FPS)
 
     # reduce video dimensions if needed 
-    if max(orig_h, orig_w) > max_side:
-        scale = max_side / max(orig_h, orig_w)
+    if max(orig_h, orig_w) > VIDEO_MAX_SIDE:
+        scale = VIDEO_MAX_SIDE / max(orig_h, orig_w)
         w = max(1, int(orig_w * scale))
         h = max(1, int(orig_h * scale))
         if w % 2 != 0:
@@ -55,12 +55,12 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color="", max_si
     ffmpeg_output = ffmpeg.output(
         ffmpeg_input,
         vid_output_path,
-        vcodec='libx264',
-        crf=18, # lower val -> higher quality -> uses more memory
-        preset='ultrafast', # slower -> more efficient -> uses less memory (longer process time)
-        pix_fmt='yuv420p',
-        maxrate='12M', # higher val -> more detail -> uses more memory
-        bufsize='24M' # higher val -> higher quality -> possibly uses more memory
+        vcodec=FFMPEG_VCODEC,
+        crf=FFMPEG_CRF, # lower val -> higher quality -> uses more memory
+        preset=FFMPEG_PRESET, # slower -> more efficient -> uses less memory (longer process time)
+        pix_fmt=FFMPEG_PIX_FMT,
+        maxrate=FFMPEG_MAXRATE, # higher val -> more detail -> uses more memory
+        bufsize=FFMPEG_BUFSIZE # higher val -> higher quality -> possibly uses more memory
     )
 
     # start ffmpeg process async to receive raw frames
@@ -110,11 +110,11 @@ def get_output_path(input_path, output_dir, filter_type, bg_color=""):
     filename = os.path.basename(input_path)
     output_base, input_ext = os.path.splitext(filename)
 
-    img_exts = [".jpg", ".jpeg", ".png", ".bmp", ".tiff"]
-    if input_ext.lower() in img_exts:
-        output_ext = ".png"
+    
+    if input_ext.lower() in IMAGE_EXTENSIONS:
+        output_ext = OUTPUT_IMAGE_EXT
     else:
-        output_ext = ".mp4"
+        output_ext = OUTPUT_VIDEO_EXT
 
     if bg_color:
         output_path = output_dir + "/" + output_base + f"_{filter_type.lower()}" + f"_{bg_color}" + output_ext
