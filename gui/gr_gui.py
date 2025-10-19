@@ -78,7 +78,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
     gr.Markdown("Transforms Images and Videos into Sketch or Cartoon Styles")
     with gr.Tabs():
         # img tab
-        with gr.Tab("IMAGE FILTERING"):
+        with gr.Tab("Image Filtering"):
             with gr.Row():
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Image or Try a Random One**")
@@ -99,7 +99,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             img_button.click(process_image, [img_input, img_filter, img_bg], img_output)
 
         # vid tab
-        with gr.Tab("VIDEO FILTERING"):
+        with gr.Tab("Video Filtering"):
             with gr.Row():
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Video or Try a Random One**")
