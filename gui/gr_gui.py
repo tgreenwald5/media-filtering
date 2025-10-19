@@ -44,7 +44,7 @@ def get_random_img():
 # get random vid from pexels
 def get_random_vid():
     VID_MIN_DUR = 5
-    VID_MAX_DUR = 20
+    VID_MAX_DUR = 15
     VID_TARGET_RES = 1280 * 720
 
     page = random.randint(1, 100)
