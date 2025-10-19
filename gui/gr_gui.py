@@ -80,7 +80,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Image Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("### **1. Upload Your Own Image Or Try a Random One**")
+                    gr.Markdown("### **1. Upload Your Own Image or Try a Random One**")
                     img_input = gr.Image(type="filepath", label="Upload Image")
                     random_img_button = gr.Button("Click For Random Image")
                 img_output = gr.Image(label="Processed Image")
@@ -101,7 +101,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Video Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("### **1. Upload Your Own Video Or Try a Random One**")
+                    gr.Markdown("### **1. Upload Your Own Video or Try a Random One**")
                     vid_input = gr.Video(label="Upload Video")
                     random_vid_button = gr.Button("Click For Random Video")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True)
