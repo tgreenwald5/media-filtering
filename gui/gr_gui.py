@@ -26,7 +26,7 @@ def process_video(upload, filter_type, bg_color):
 # set bg
 def update_bg_options(filter_choice):
         if filter_choice == "Sketch":
-            return gr.update(choices=["White", "Black"], value="White", interactive=True, visible=True)
+            return gr.update(choices=["Black", "White"], value="Black", interactive=True, visible=True)
         else:
             return gr.update(choices=[], value=None, interactive=False, visible=False)
 
