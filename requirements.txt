@@ -8,4 +8,3 @@ torch
 torchvision
 matplotlib
 pexels-api-py
-random
