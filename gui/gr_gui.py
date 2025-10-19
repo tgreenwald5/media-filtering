@@ -80,8 +80,9 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Image Filtering"):
             with gr.Row():
                 with gr.Column():
+                    gr.Markdown("Upload your own image or try a random one.")
                     img_input = gr.Image(type="filepath", label="Upload Image")
-                    random_img_button = gr.Button("Click To Use Random Image Instead")
+                    random_img_button = gr.Button("Click For Random Image")
                 img_output = gr.Image(label="Processed Image")
             
             random_img_button.click(get_random_img, outputs=img_input)
@@ -97,17 +98,18 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Video Filtering"):
             with gr.Row():
                 with gr.Column():
+                    gr.Markdown("Upload your own video or try a random one.")
                     vid_input = gr.Video(label="Upload Video")
-                    random_vid_button = gr.Button("Click To Use Random Video Instead")
+                    random_vid_button = gr.Button("Click For Random Video")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True)
 
             random_vid_button.click(get_random_vid, outputs=vid_input)
 
-            vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter")
+            vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Choose Filter Style")
             vid_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
             vid_filter.change(update_bg_options, vid_filter, vid_bg)
 
-            vid_button = gr.Button("Apply Filter")
+            vid_button = gr.Button("Apply Filter", variant="primary")
             vid_button.click(process_video, [vid_input, vid_filter, vid_bg], vid_output)
 
 demo.launch()
