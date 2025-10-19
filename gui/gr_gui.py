@@ -16,10 +16,12 @@ def process_image(upload, filter_type, bg_color):
     output_dir = tempfile.mkdtemp()
     return pm.process_img(upload, output_dir, filter_type, bg_color)
 
+
 # vid processing
 def process_video(upload, filter_type, bg_color):
     output_dir = tempfile.mkdtemp()
     return pm.process_vid(upload, output_dir, filter_type, bg_color)
+
 
 # set bg
 def update_bg_options(filter_choice):
@@ -28,6 +30,7 @@ def update_bg_options(filter_choice):
         else:
             return gr.update(choices=[], value=None, interactive=False, visible=False)
 
+
 # get random pic from pexels
 def get_random_pic():
     page = random.randint(1, 100)
@@ -35,7 +38,8 @@ def get_random_pic():
     if "photos" not in res or not res["photos"]:
         raise gr.Error("Could not fetch image.")
     photo = random.choice(res["photos"])
-    return photo["src"]["large2x"]
+    return photo["src"]["large"]
+
 
 # ui
 with gr.Blocks(css=".progress-text {display: none !important;}") as demo:

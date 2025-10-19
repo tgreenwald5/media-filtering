@@ -5,6 +5,7 @@ from collections import deque
 from kneed import KneeLocator
 from mediafilter.constants import *
 
+
 def normalize_size(img):
     h, w = img.shape[:2]
     if max(h, w) <= IMAGE_MAX_SIDE:
@@ -14,6 +15,7 @@ def normalize_size(img):
     norm_h = max(1, int(h * scale))
     norm_img = cv.resize(img, (norm_w, norm_h), interpolation=cv.INTER_AREA)
     return norm_img
+
 
 def get_canny_threshs(img): # thresholds for edge detection 
     grad_x = cv.Sobel(img, cv.CV_64F, 1, 0, ksize=3)
@@ -26,6 +28,7 @@ def get_canny_threshs(img): # thresholds for edge detection
         upper = min(lower + CANNY_FALLBACK_INC, 255)
     return lower, upper
 
+
 def get_sigma(img): # calculate how much blur to use for gaussianBlur
     sharpness = cv.Laplacian(img, cv.CV_64F).var()
     base_sigma = GAUS_BASE_SIGMA
@@ -36,11 +39,13 @@ def get_sigma(img): # calculate how much blur to use for gaussianBlur
     else:
         return base_sigma
 
+
 def get_edges(img, k_size, lower_th, upper_th, sigma):
     k_size = max(MIN_BLUR_KERNEL, k_size | 1)
     blur_img = cv.GaussianBlur(img, (k_size, k_size), sigma)
     edges = cv.Canny(blur_img, lower_th, upper_th)
     return edges
+
 
 def get_sketch_frame(frame, bg_color, for_video=False):
     if for_video == False:
@@ -60,11 +65,13 @@ def get_sketch_frame(frame, bg_color, for_video=False):
 
     return sketch_frame
 
+
 # fit new kmeans with new color centroids
 def get_kmeans(pix_colors, num_clusts):
     new_kmeans = MiniBatchKMeans(n_clusters=num_clusts, random_state=0, batch_size=KMEANS_BATCH_FIT, n_init="auto")
     new_kmeans.fit(pix_colors)
     return new_kmeans
+
 
 # reduce edge flickering in video
 edge_buffer = deque(maxlen=EDGE_BUFFER_LEN)
@@ -102,13 +109,14 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     pixel_colors = smooth.reshape((-1, 3)) 
 
     if kmeans == None or frame_idx % KMEANS_RETRAIN_INTERVAL == 0: # if kmeans not created or time for new fitting
+        k_min, k_max = get_k_range(frame)
         if for_video == True:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=KMEANS_K_MIN, k_max=KMEANS_K_MAX, step=4, for_vid=True)
+            elbow_k = get_k_elbow(sample, k_min=k_min, k_max=k_max, step=KMEANS_STEP, for_vid=True)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
-            elbow_k = get_k_elbow(sample, k_min=KMEANS_K_MIN, k_max=KMEANS_K_MAX, step=4, for_vid=False)
+            elbow_k = get_k_elbow(sample, k_min=k_min, k_max=k_max, step=KMEANS_STEP, for_vid=False)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
@@ -130,8 +138,8 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     cartoon_frame = quantized.copy()
 
     cartoon_frame[edges != 0] = (cartoon_frame[edges != 0] * DARK_FACTOR).astype(np.uint8)
-
     return cartoon_frame
+
 
 # calc number of clusters to use for kmeans
 def get_k_elbow(pix_colors, k_min, k_max, step, for_vid):
@@ -151,3 +159,31 @@ def get_k_elbow(pix_colors, k_min, k_max, step, for_vid):
     if best_k == None:
         best_k = ks[len(ks) // 2]
     return best_k
+
+
+def get_k_range(frame):
+    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    h, w = hsv.shape[:2]
+    sample_size = min(10000, h * w)
+    idxs = np.random.choice(h * w, size=sample_size, replace=False)
+    pixel_sample = hsv.reshape(-1, 3)[idxs]
+
+    hue_var = np.var(pixel_sample[:, 0])
+    avg_sat = np.mean(pixel_sample[:, 1])
+    unique_colors = len(np.unique(pixel_sample[:, 0]))
+
+    if avg_sat < 30:
+        k_min = 4
+        k_max = 8
+    elif hue_var < 500 or unique_colors < 20:
+        k_min = 6
+        k_max = 10
+    elif hue_var < 1500:
+        k_min = 8
+        k_max = 14
+    else:
+        k_min = 10
+        k_max = 18
+    
+    return k_min, k_max
+    
