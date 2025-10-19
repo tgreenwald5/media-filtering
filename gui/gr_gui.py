@@ -74,23 +74,26 @@ def get_random_vid():
 
 # ui
 with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
-    gr.Markdown("Media Filtering")
+    gr.Markdown("## **Media Filtering**")
     with gr.Tabs():
         # img tab
         with gr.Tab("Image Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("Upload your own image or try a random one.")
+                    gr.Markdown("### **1. Upload Your Own Image Or Try a Random One**")
                     img_input = gr.Image(type="filepath", label="Upload Image")
                     random_img_button = gr.Button("Click For Random Image")
                 img_output = gr.Image(label="Processed Image")
             
             random_img_button.click(get_random_img, outputs=img_input)
-            
-            img_filter = gr.Radio(["Sketch", "Cartoon"], label="Choose Filter Style")
+
+            gr.Markdown("### **2. Choose a Filter Style**")
+            img_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter Style")
             img_bg = gr.Radio([], label="Choose Sketch Background Color", value=None, interactive=False, visible=False)
             img_filter.change(update_bg_options, img_filter, img_bg)
             
+            
+            gr.Markdown("### **3. Apply the Filter**")
             img_button = gr.Button("Apply Filter", variant="primary")
             img_button.click(process_image, [img_input, img_filter, img_bg], img_output)
 
@@ -98,17 +101,19 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Video Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("Upload your own video or try a random one.")
+                    gr.Markdown("### **1. Upload Your Own Video Or Try a Random One**")
                     vid_input = gr.Video(label="Upload Video")
                     random_vid_button = gr.Button("Click For Random Video")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True)
 
             random_vid_button.click(get_random_vid, outputs=vid_input)
 
-            vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Choose Filter Style")
+            gr.Markdown("### **2. Choose a Filter Style**")
+            vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter Style")
             vid_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
             vid_filter.change(update_bg_options, vid_filter, vid_bg)
-
+            
+            gr.Markdown("### **3. Apply the Filter**")
             vid_button = gr.Button("Apply Filter", variant="primary")
             vid_button.click(process_video, [vid_input, vid_filter, vid_bg], vid_output)
 
