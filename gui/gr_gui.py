@@ -31,14 +31,45 @@ def update_bg_options(filter_choice):
             return gr.update(choices=[], value=None, interactive=False, visible=False)
 
 
-# get random pic from pexels
-def get_random_pic():
+# get random img from pexels
+def get_random_img():
     page = random.randint(1, 100)
-    res = pexel.search_photos(query="nature", per_page=50, page=page)
+    res = pexel.search_photos(query="nature", per_page=80, page=page)
     if "photos" not in res or not res["photos"]:
         raise gr.Error("Could not fetch image.")
     photo = random.choice(res["photos"])
     return photo["src"]["large"]
+
+
+# get random vid from pexels
+def get_random_vid():
+    VID_MIN_DUR = 5
+    VID_MAX_DUR = 25
+    VID_TARGET_RES = 1920 * 1080
+
+    page = random.randint(1, 100)
+    res = pexel.search_videos(query="nature", per_page=80, page=page)
+    vid_pool = res.get("videos") or []
+
+    # filter vids by time
+    filt_by_dur = []
+    for all_vid in vid_pool:
+        if all_vid['duration'] >= VID_MIN_DUR and all_vid['duration'] <= VID_MAX_DUR:
+            filt_by_dur.append(all_vid)
+    vid_pool = filt_by_dur
+
+    # filter vids by res
+    filt_by_res = []
+    for all_vid in vid_pool:
+        for indiv_vid in all_vid["video_files"]:
+            vid_res = indiv_vid["width"] * indiv_vid["height"]
+            if vid_res == VID_TARGET_RES:
+                filt_by_res.append(indiv_vid)
+    vid_pool = filt_by_res
+
+    print(len(vid_pool))
+    best_vid = vid_pool[random.randint(0, len(vid_pool) - 1)]
+    return best_vid["link"]
 
 
 # ui
@@ -50,10 +81,10 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             with gr.Row():
                 with gr.Column():
                     img_input = gr.Image(type="filepath", label="Upload Image")
-                    random_button = gr.Button("Click To Use Random Image Instead")
+                    random_img_button = gr.Button("Click To Use Random Image Instead")
                 img_output = gr.Image(label="Processed Image")
             
-            random_button.click(get_random_pic, outputs=img_input)
+            random_img_button.click(get_random_img, outputs=img_input)
             
             img_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter")
             img_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
@@ -65,11 +96,18 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         # vid tab
         with gr.Tab("Video Filtering"):
             with gr.Row():
-                vid_input = gr.Video(label="Upload Video")
+                with gr.Column():
+                    vid_input = gr.Video(label="Upload Video")
+                    random_vid_button = gr.Button("Click To Use Random Video Instead")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True)
+
+            random_vid_button.click(get_random_vid, outputs=vid_input)
+
             vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter")
             vid_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
             vid_filter.change(update_bg_options, vid_filter, vid_bg)
+
             vid_button = gr.Button("Apply Filter")
             vid_button.click(process_video, [vid_input, vid_filter, vid_bg], vid_output)
+
 demo.launch()
