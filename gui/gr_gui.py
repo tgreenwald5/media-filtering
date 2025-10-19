@@ -38,14 +38,14 @@ def get_random_img():
     if "photos" not in res or not res["photos"]:
         raise gr.Error("Could not fetch image.")
     photo = random.choice(res["photos"])
-    return photo["src"]["large"]
+    return photo["src"]["medium"]
 
 
 # get random vid from pexels
 def get_random_vid():
     VID_MIN_DUR = 5
     VID_MAX_DUR = 20
-    VID_TARGET_RES = 1920 * 1080
+    VID_TARGET_RES = 1280 * 720
 
     page = random.randint(1, 100)
     res = pexel.search_videos(query="nature", per_page=80, page=page)
@@ -86,8 +86,8 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             
             random_img_button.click(get_random_img, outputs=img_input)
             
-            img_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter")
-            img_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)
+            img_filter = gr.Radio(["Sketch", "Cartoon"], label="Choose Filter Style")
+            img_bg = gr.Radio([], label="Choose Sketch Background Color", value=None, interactive=False, visible=False)
             img_filter.change(update_bg_options, img_filter, img_bg)
             
             img_button = gr.Button("Apply Filter", variant="primary")
