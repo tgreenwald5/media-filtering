@@ -75,6 +75,7 @@ def get_random_vid():
 # ui
 with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
     gr.Markdown("## **Media Filtering**")
+    gr.Markdown("Transforms Images and Videos Into Sketch or Cartoon Styles")
     with gr.Tabs():
         # img tab
         with gr.Tab("Image Filtering"):
