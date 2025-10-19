@@ -14,6 +14,8 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     img_output_path = get_output_path(img_input_path, img_output_dir, filter_type, bg_color)
     cv.imwrite(img_output_path, img_output)
     print("Image saved to ", img_output_path)
+    flt.kmeans = None
+    flt.edge_buffer.clear()
     return img_output_path
 
 def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):

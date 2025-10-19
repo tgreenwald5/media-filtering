@@ -62,7 +62,7 @@ def get_sketch_frame(frame, bg_color, for_video=False):
 
 # fit new kmeans with new color centroids
 def get_kmeans(pix_colors, num_clusts):
-    new_kmeans = MiniBatchKMeans(n_clusters=num_clusts, random_state=0, batch_size=KMEANS_BATCH_FIT)
+    new_kmeans = MiniBatchKMeans(n_clusters=num_clusts, random_state=0, batch_size=KMEANS_BATCH_FIT, n_init="auto")
     new_kmeans.fit(pix_colors)
     return new_kmeans
 
@@ -142,7 +142,7 @@ def get_k_elbow(pix_colors, k_min, k_max, step, for_vid):
     else:
         bs = KMEANS_BATCH_IMG
     for k in ks:
-        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=bs)
+        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, batch_size=bs, n_init="auto")
         kmeans.fit(pix_colors)
         inertias.append(kmeans.inertia_)
 
