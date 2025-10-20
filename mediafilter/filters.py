@@ -47,7 +47,7 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
     quantized = kmeans.cluster_centers_[labels].astype('uint8')
     quantized = quantized.reshape(smooth.shape)
 
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(quantized, cv.COLOR_BGR2GRAY)
     
     lower_th, upper_th = fu.get_canny_threshs(gray)
     sigma = fu.get_sigma(gray)
