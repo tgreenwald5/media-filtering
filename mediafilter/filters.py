@@ -118,6 +118,9 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
             sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
             elbow_k = get_k_elbow(sample, k_min=k_min, k_max=k_max, step=KMEANS_STEP, for_vid=False)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
+    else:
+        sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
+        kmeans.partial_fit(sample)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
     quantized = kmeans.cluster_centers_[labels].astype('uint8')
