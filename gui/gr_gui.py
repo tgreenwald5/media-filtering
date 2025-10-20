@@ -31,27 +31,46 @@ def update_bg_options(filter_choice):
             return gr.update(choices=[], value=None, interactive=False, visible=False)
 
 
-# get random img from pexels
+# get random img from Pexels
 def get_random_img():
-    page = random.randint(1, 100)
-    res = pexel.search_photos(query="nature", per_page=80, page=page)
-    if "photos" not in res or not res["photos"]:
-        raise gr.Error("Could not fetch image.")
-    photo = random.choice(res["photos"])
-    return photo["src"]["medium"]
+    IMG_SIZE = "medium"
+    IMG_QUERIES = ["nature", "outdoors", "cities", "food"]
+    IMG_QUERY_SAMPLE_SIZE = 30
+
+    # fetch imgs
+    img_pool = []
+    for q in IMG_QUERIES:
+        rand_page = random.randint(1, 100)
+        res = pexel.search_photos(query=q, per_page=IMG_QUERY_SAMPLE_SIZE, page=rand_page)
+        q_imgs = res.get("photos", [])
+        img_pool.extend(q_imgs)
+    
+    print(len(img_pool))
+
+    if img_pool == None:
+        raise gr.Error("Error fetching images.")
+
+    rand_img = random.choice(img_pool)
+    return rand_img["src"][IMG_SIZE]
 
 
-# get random vid from pexels
+# get random vid from Pexels
 def get_random_vid():
     VID_MIN_DUR = 5
-    VID_MAX_DUR = 15
-    VID_TARGET_RES = 1280 * 720
+    VID_MAX_DUR = 10
+    VID_TARGET_RES = 960 * 540
+    VID_QUERIES = ["nature", "outdoors", "city", "food"]
+    VID_QUERY_SAMPLE_SIZE = 30
+    
+    # fetch vids
+    vid_pool = []
+    for q in VID_QUERIES:
+        rand_page = random.randint(1, 100)
+        res = pexel.search_videos(query=q, per_page=VID_QUERY_SAMPLE_SIZE, page=rand_page)
+        q_vids = res.get("videos")
+        vid_pool += q_vids
 
-    page = random.randint(1, 100)
-    res = pexel.search_videos(query="nature", per_page=80, page=page)
-    vid_pool = res.get("videos") or []
-
-    # filter vids by time
+    # filter vids by duration
     filt_by_dur = []
     for all_vid in vid_pool:
         if all_vid['duration'] >= VID_MIN_DUR and all_vid['duration'] <= VID_MAX_DUR:
@@ -68,8 +87,8 @@ def get_random_vid():
     vid_pool = filt_by_res
 
     print(len(vid_pool))
-    best_vid = vid_pool[random.randint(0, len(vid_pool) - 1)]
-    return best_vid["link"]
+    rand_vid = random.choice(vid_pool)
+    return rand_vid["link"]
 
 
 # ui
@@ -81,7 +100,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Image Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("### **1. Upload Your Own Image or Try a Random One**")
+                    gr.Markdown("### **1. Upload Your Own Image or Use a Random One**")
                     img_input = gr.Image(type="filepath", label="Upload Image")
                     random_img_button = gr.Button("Click For Random Image")
                 img_output = gr.Image(label="Processed Image")
@@ -102,7 +121,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
         with gr.Tab("Video Filtering"):
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("### **1. Upload Your Own Video or Try a Random One**")
+                    gr.Markdown("### **1. Upload Your Own Video or Use a Random One**")
                     vid_input = gr.Video(label="Upload Video")
                     random_vid_button = gr.Button("Click For Random Video")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True)
