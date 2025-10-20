@@ -3,6 +3,7 @@ import cv2 as cv
 import mediafilter.filters as flt
 import ffmpeg
 from mediafilter.constants import *
+import mediafilter.filters_utils as fu
 
 def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     img_input = cv.imread(img_input_path)
@@ -15,7 +16,7 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     cv.imwrite(img_output_path, img_output)
     print("Image saved to ", img_output_path)
     flt.kmeans = None
-    flt.edge_buffer.clear()
+    fu.edge_buffer.clear()
     return img_output_path
 
 def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
@@ -105,7 +106,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
 
     print("Video saved to ", vid_output_path)
     flt.kmeans = None
-    flt.edge_buffer.clear()
+    fu.edge_buffer.clear()
     return vid_output_path
 
 def get_output_path(input_path, output_dir, filter_type, bg_color=""):
