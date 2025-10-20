@@ -100,6 +100,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
                     gr.Markdown("### **1. Upload Your Own Image or Use a Random One**")
                     img_input = gr.Image(type="filepath", label="Upload Image", width=960, height=540)
                     random_img_button = gr.Button("Click For Random Image")
+                    gr.Markdown("<u>Note:</u> Randomly generated media is randomly chosen from Pexels.com")
                 img_output = gr.Image(label="Processed Image", width=960, height=540)
 
             random_img_button.click(get_random_img, outputs=img_input)
@@ -114,7 +115,6 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             img_button = gr.Button("Apply Filter", variant="primary")
             img_button.click(process_image, [img_input, img_filter, img_bg], img_output)
 
-            gr.Markdown("Note: Randomly generated media is randomly chosen from Pexels.com")
 
         # vid tab
         with gr.Tab("Video Filtering"):
@@ -123,6 +123,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
                     gr.Markdown("### **1. Upload Your Own Video or Use a Random One**")
                     vid_input = gr.Video(label="Upload Video", width=960, height=540)
                     random_vid_button = gr.Button("Click For Random Video")
+                    gr.Markdown("<u>Note:</u> Randomly generated media is randomly chosen from Pexels.com")
                 vid_output = gr.Video(label="Processed Video", show_download_button=True, width=960, height=540)
 
             random_vid_button.click(get_random_vid, outputs=vid_input)
@@ -135,7 +136,5 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             gr.Markdown("### **3. Apply the Filter**")
             vid_button = gr.Button("Apply Filter", variant="primary")
             vid_button.click(process_video, [vid_input, vid_filter, vid_bg], vid_output)
-
-            gr.Markdown("Note: Randomly generated media is randomly chosen from Pexels.com")
 
 demo.launch()
