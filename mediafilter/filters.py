@@ -106,20 +106,19 @@ def get_cartoon_frame(frame, frame_idx, for_video=False):
         frame = normalize_size(frame)
 
     smooth = cv.bilateralFilter(frame, d=BILATERAL_D, sigmaColor=BILATERAL_SIGMA_COLOR, sigmaSpace=BILATERAL_SIGMA_SPACE)
-    pixel_colors = smooth.reshape((-1, 3)) 
-
+    pixel_colors = smooth.reshape((-1, 3))
     if kmeans == None or frame_idx % KMEANS_RETRAIN_INTERVAL == 0: # if kmeans not created or time for new fitting
         k_min, k_max = get_k_range(frame)
         if for_video == True:
-            sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
+            sample = pixel_colors[np.random.choice(len(pixel_colors), size=min(len(pixel_colors), KMEANS_SAMPLE_SIZE), replace=False)]
             elbow_k = get_k_elbow(sample, k_min=k_min, k_max=k_max, step=KMEANS_STEP, for_vid=True)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (video)
         else:
-            sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
+            sample = pixel_colors[np.random.choice(len(pixel_colors), size=min(len(pixel_colors), KMEANS_SAMPLE_SIZE), replace=False)]
             elbow_k = get_k_elbow(sample, k_min=k_min, k_max=k_max, step=KMEANS_STEP, for_vid=False)
             kmeans = get_kmeans(pixel_colors, num_clusts=elbow_k) # get new centroids (img)
     else:
-        sample = pixel_colors[np.random.choice(len(pixel_colors), size=KMEANS_SAMPLE_SIZE, replace=False)]
+        sample = pixel_colors[np.random.choice(len(pixel_colors), size=min(len(pixel_colors), KMEANS_SAMPLE_SIZE), replace=False)]
         kmeans.partial_fit(sample)
 
     labels = kmeans.predict(pixel_colors) # pixels to color clusters
