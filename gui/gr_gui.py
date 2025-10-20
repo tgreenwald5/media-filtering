@@ -117,6 +117,8 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             img_button = gr.Button("Apply Filter", variant="primary")
             img_button.click(process_image, [img_input, img_filter, img_bg], img_output)
 
+            gr.Markdown("Note: Randomly generated media is randomly chosen from Pexels.com")
+
         # vid tab
         with gr.Tab("Video Filtering"):
             with gr.Row():
@@ -136,5 +138,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             gr.Markdown("### **3. Apply the Filter**")
             vid_button = gr.Button("Apply Filter", variant="primary")
             vid_button.click(process_video, [vid_input, vid_filter, vid_bg], vid_output)
+
+            gr.Markdown("Note: Randomly generated media is randomly chosen from Pexels.com")
 
 demo.launch()
