@@ -16,12 +16,10 @@ def process_image(upload, filter_type, bg_color):
     output_dir = tempfile.mkdtemp()
     return pm.process_img(upload, output_dir, filter_type, bg_color)
 
-
 # vid processing
 def process_video(upload, filter_type, bg_color):
     output_dir = tempfile.mkdtemp()
     return pm.process_vid(upload, output_dir, filter_type, bg_color)
-
 
 # set bg
 def update_bg_options(filter_choice):
@@ -33,9 +31,9 @@ def update_bg_options(filter_choice):
 
 # get random img from Pexels
 def get_random_img():
-    IMG_SIZE = "medium"
+    IMG_SIZE = "large"
     IMG_QUERIES = ["nature", "outdoors", "cities", "food"]
-    IMG_QUERY_SAMPLE_SIZE = 30
+    IMG_QUERY_SAMPLE_SIZE = 40
 
     # fetch imgs
     img_pool = []
@@ -53,14 +51,13 @@ def get_random_img():
     rand_img = random.choice(img_pool)
     return rand_img["src"][IMG_SIZE]
 
-
 # get random vid from Pexels
 def get_random_vid():
     VID_MIN_DUR = 5
     VID_MAX_DUR = 10
     VID_TARGET_RES = 960 * 540
     VID_QUERIES = ["nature", "outdoors", "city", "food"]
-    VID_QUERY_SAMPLE_SIZE = 30
+    VID_QUERY_SAMPLE_SIZE = 40
     
     # fetch vids
     vid_pool = []
@@ -101,10 +98,10 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             with gr.Row():
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Image or Use a Random One**")
-                    img_input = gr.Image(type="filepath", label="Upload Image")
+                    img_input = gr.Image(type="filepath", label="Upload Image", width=960, height=540)
                     random_img_button = gr.Button("Click For Random Image")
-                img_output = gr.Image(label="Processed Image")
-            
+                img_output = gr.Image(label="Processed Image", width=960, height=540)
+
             random_img_button.click(get_random_img, outputs=img_input)
 
             gr.Markdown("### **2. Choose a Filter Style**")
@@ -124,12 +121,12 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             with gr.Row():
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Video or Use a Random One**")
-                    vid_input = gr.Video(label="Upload Video")
+                    vid_input = gr.Video(label="Upload Video", width=960, height=540)
                     random_vid_button = gr.Button("Click For Random Video")
-                vid_output = gr.Video(label="Processed Video", show_download_button=True)
+                vid_output = gr.Video(label="Processed Video", show_download_button=True, width=960, height=540)
 
             random_vid_button.click(get_random_vid, outputs=vid_input)
-
+            
             gr.Markdown("### **2. Choose a Filter Style**")
             vid_filter = gr.Radio(["Sketch", "Cartoon"], label="Filter Style")
             vid_bg = gr.Radio([], label="Sketch Background Color", value=None, interactive=False, visible=False)

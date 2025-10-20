@@ -1,6 +1,6 @@
 # frame specs
-IMAGE_MAX_SIDE = 1280
-VIDEO_MAX_SIDE = 1050
+IMAGE_MAX_SIDE = 960
+VIDEO_MAX_SIDE = 960
 
 # canny thresholds
 CANNY_LOWER_RATIO = 0.66
