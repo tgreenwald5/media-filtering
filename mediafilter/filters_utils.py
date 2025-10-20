@@ -113,7 +113,7 @@ def get_k_range(frame):
         k_min = 8
         k_max = 14
     else:
-        k_min = 10
-        k_max = 18
+        k_min = 12
+        k_max = 24
     
     return k_min, k_max

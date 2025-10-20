@@ -43,7 +43,7 @@ KMEANS_BATCH_FIT = 3000 # number samples processed per mini batch update
 #KMEANS_K_MAX = 18
 
 # cartoon
-DARK_FACTOR = 0.7
+DARK_FACTOR = 0.4 # smaller value -> darker edges
 
 # clahe
 CLAHE_CLIP_LIMIT = 2.0
