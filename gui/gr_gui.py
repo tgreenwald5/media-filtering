@@ -53,7 +53,7 @@ def get_random_img():
 def get_random_vid():
     VID_MIN_DUR = 5
     VID_MAX_DUR = 10
-    VID_TARGET_RES = 960 * 540
+    VID_TARGET_RES = 640 * 360
     VID_QUERIES = ["nature", "outdoors", "city", "food"]
     VID_QUERY_SAMPLE_SIZE = 40
     
