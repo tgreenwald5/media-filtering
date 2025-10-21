@@ -95,7 +95,7 @@ def get_k_elbow(pix_colors, k_min, k_max, step, for_vid):
 def get_k_range(frame):
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     h, w = hsv.shape[:2]
-    sample_size = min(10000, h * w)
+    sample_size = min(100000, h * w)
     idxs = np.random.choice(h * w, size=sample_size, replace=False)
     pixel_sample = hsv.reshape(-1, 3)[idxs]
 
@@ -107,13 +107,13 @@ def get_k_range(frame):
         k_min = 4
         k_max = 8
     elif hue_var < 500 or unique_colors < 20:
-        k_min = 6
-        k_max = 10
-    elif hue_var < 1500:
         k_min = 8
-        k_max = 14
-    else:
+        k_max = 16
+    elif hue_var < 1500:
         k_min = 12
         k_max = 24
+    else:
+        k_min = 16
+        k_max = 32
     
     return k_min, k_max

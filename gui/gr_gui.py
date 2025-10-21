@@ -42,8 +42,6 @@ def get_random_img():
         res = pexel.search_photos(query=q, per_page=IMG_QUERY_SAMPLE_SIZE, page=rand_page)
         q_imgs = res.get("photos", [])
         img_pool.extend(q_imgs)
-    
-    print(len(img_pool))
 
     if img_pool == None:
         raise gr.Error("Error fetching images.")
@@ -83,7 +81,6 @@ def get_random_vid():
                 filt_by_res.append(indiv_vid)
     vid_pool = filt_by_res
 
-    print(len(vid_pool))
     rand_vid = random.choice(vid_pool)
     return rand_vid["link"]
 
