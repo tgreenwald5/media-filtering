@@ -32,7 +32,7 @@ def update_bg_options(filter_choice):
 # get random img from Pexels
 def get_random_img():
     IMG_SIZE = "large"
-    IMG_QUERIES = ["nature", "outdoors", "cities", "food"]
+    IMG_QUERIES = ["nature", "outdoors", "road", "food"]
     IMG_QUERY_SAMPLE_SIZE = 40
 
     # fetch imgs
@@ -54,13 +54,13 @@ def get_random_vid():
     VID_MIN_DUR = 5
     VID_MAX_DUR = 10
     VID_TARGET_RES = 640 * 360
-    VID_QUERIES = ["nature", "outdoors", "city", "food"]
+    VID_QUERIES = ["nature", "outdoors", "road", "cars", "food"]
     VID_QUERY_SAMPLE_SIZE = 40
     
     # fetch vids
     vid_pool = []
     for q in VID_QUERIES:
-        rand_page = random.randint(1, 100)
+        rand_page = random.randint(1, 30)
         res = pexel.search_videos(query=q, per_page=VID_QUERY_SAMPLE_SIZE, page=rand_page)
         q_vids = res.get("videos")
         vid_pool += q_vids

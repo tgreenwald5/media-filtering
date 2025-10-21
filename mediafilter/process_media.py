@@ -62,8 +62,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
         crf=FFMPEG_CRF, # lower val -> higher quality -> uses more memory
         preset=FFMPEG_PRESET, # slower -> more efficient -> uses less memory (longer process time)
         pix_fmt=FFMPEG_PIX_FMT,
-        maxrate=FFMPEG_MAXRATE, # higher val -> more detail -> uses more memory
-        bufsize=FFMPEG_BUFSIZE # higher val -> higher quality -> possibly uses more memory
+        tune=FFMPEG_TUNE
     )
 
     # start ffmpeg process async to receive raw frames

@@ -108,12 +108,12 @@ def get_k_range(frame):
         k_max = 8
     elif hue_var < 500 or unique_colors < 20:
         k_min = 8
-        k_max = 16
+        k_max = 12
     elif hue_var < 1500:
         k_min = 12
-        k_max = 24
+        k_max = 16
     else:
         k_min = 16
-        k_max = 32
+        k_max = 20
     
     return k_min, k_max
