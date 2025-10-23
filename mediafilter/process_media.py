@@ -17,7 +17,7 @@ def process_img(img_input_path, img_output_dir, filter_type, bg_color=""):
     cv.imwrite(img_output_path, img_output)
 
     est_time = get_time()
-    dl_log = f"Image saved to: {img_output_path} at time: {est_time}"
+    dl_log = f"Image saved to: {img_output_path} at: {est_time}"
     #print("Image saved to ", img_output_path)
     print(dl_log)
     flt.kmeans = None
@@ -109,7 +109,7 @@ def process_vid(vid_input_path, vid_output_dir, filter_type, bg_color=""):
     ffmpeg_process.wait()
 
     est_time = get_time()
-    dl_log = f"Video saved to: {vid_output_path} at time: {est_time}"
+    dl_log = f"Video saved to: {vid_output_path} at: {est_time}"
     print(dl_log)
 
     #print("Video saved to ", vid_output_path)

@@ -4,7 +4,5 @@ numpy>2
 ffmpeg-python
 scikit-learn
 kneed
-torch
-torchvision
 matplotlib
 pexels-api-py
