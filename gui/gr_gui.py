@@ -96,7 +96,7 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Image or Use a Random One**")
                     img_input = gr.Image(type="filepath", label="Upload Image", width=960, height=540)
-                    random_img_button = gr.Button("Click For Random Image")
+                    random_img_button = gr.Button("Click For Random Image", variant="primary")
                     gr.Markdown("<u>Note:</u> Randomly generated media is randomly chosen from Pexels.com")
                 img_output = gr.Image(label="Processed Image", width=960, height=540)
 
@@ -118,10 +118,10 @@ with gr.Blocks(css=".progress-text {display: none !important;}") as demo:
             with gr.Row():
                 with gr.Column():
                     gr.Markdown("### **1. Upload Your Own Video or Use a Random One**")
-                    vid_input = gr.Video(label="Upload Video", width=960, height=540)
-                    random_vid_button = gr.Button("Click For Random Video")
+                    vid_input = gr.Video(label="Upload Video", width=960, height=540, autoplay=True)
+                    random_vid_button = gr.Button("Click For Random Video", variant="primary")
                     gr.Markdown("<u>Note:</u> Randomly generated media is randomly chosen from Pexels.com")
-                vid_output = gr.Video(label="Processed Video", show_download_button=True, width=960, height=540)
+                vid_output = gr.Video(label="Processed Video", show_download_button=True, width=960, height=540, autoplay=True)
 
             random_vid_button.click(get_random_vid, outputs=vid_input)
             
